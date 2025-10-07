@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gemini API Web Link Manager</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: flex;
+            gap: 20px;
+            height: calc(100vh - 200px);
+        }
+
+        .sidebar {
+            width: 300px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .api-section {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .api-input {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(0, 0, 0, 0.3);
+            color: white;
+            margin-top: 10px;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #fdbb2d, #b21f1f);
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .window-counter {
+            text-align: center;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        .counter {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #fdbb2d;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .link-list {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            flex-grow: 1;
+            overflow-y: auto;
+        }
+
+        .link-item {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .link-item:hover {
+            background: rgba(0, 0, 0, 0.5);
+            transform: translateX(5px);
+        }
+
+        .link-item.active {
+            border-left: 4px solid #fdbb2d;
+        }
+
+        .main-window {
+            flex-grow: 1;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .window-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .window-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .window-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .control-btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .window-content {
+            flex-grow: 1;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .web-frame {
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 8px;
+            background: white;
+        }
+
+        .search-section {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(0, 0, 0, 0.3);
+            color: white;
+            margin-top: 10px;
+        }
+
+        .status {
+            text-align: center;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+                height: auto;
+            }
+            
+            .sidebar {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Gemini API Web Link Manager</h1>
+            <p class="subtitle">Search, open, and manage multiple web links with real-time tracking</p>
+        </header>
+        
+        <div class="main-content">
+            <div class="sidebar">
+                <div class="api-section">
+                    <h3>Gemini API Configuration</h3>
+                    <input type="text" class="api-input" placeholder="Enter your Gemini API Key" id="apiKey">
+                    <button class="btn" id="saveApiKey">Save API Key</button>
+                </div>
+                
+                <div class="window-counter">
+                    <h3>Active Windows</h3>
+                    <div class="counter" id="windowCount">0</div>
+                </div>
+                
+                <div class="link-list">
+                    <h3>Saved Links</h3>
+                    <div class="link-item active" data-url="https://gemini.google.com">
+                        <strong>Gemini Home</strong>
+                        <p>https://gemini.google.com</p>
+                    </div>
+                    <div class="link-item" data-url="https://bit.ly/42jAlZg">
+                        <strong>Press Release</strong>
+                        <p>https://bit.ly/42jAlZg</p>
+                    </div>
+                    <div class="link-item" data-url="https://bit.ly/4gKFvTX">
+                        <strong>Popular Information</strong>
+                        <p>https://bit.ly/4gKFvTX</p>
+                    </div>
+                    <div class="link-item" data-url="https://bit.ly/48CSBjZ">
+                        <strong>Advanced Information</strong>
+                        <p>https://bit.ly/48CSBjZ</p>
+                    </div>
+                </div>
+                
+                <div class="search-section">
+                    <h3>Search with Gemini</h3>
+                    <input type="text" class="search-input" placeholder="Enter search query" id="searchQuery">
+                    <button class="btn" id="searchBtn">Search</button>
+                    <div class="status" id="searchStatus">Ready to search</div>
+                </div>
+            </div>
+            
+            <div class="main-window">
+                <div class="window-header">
+                    <div class="window-title">Web Content Viewer</div>
+                    <div class="window-controls">
+                        <button class="control-btn" id="newWindowBtn">New Window</button>
+                        <button class="control-btn" id="closeWindowBtn">Close Window</button>
+                        <button class="control-btn" id="refreshBtn">Refresh</button>
+                    </div>
+                </div>
+                
+                <div class="window-content">
+                    <iframe class="web-frame" id="mainFrame" src="https://gemini.google.com"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const apiKeyInput = document.getElementById('apiKey');
+        const saveApiKeyBtn = document.getElementById('saveApiKey');
+        const windowCount = document.getElementById('windowCount');
+        const linkItems = document.querySelectorAll('.link-item');
+        const searchQuery = document.getElementById('searchQuery');
+        const searchBtn = document.getElementById('searchBtn');
+        const searchStatus = document.getElementById('searchStatus');
+        const mainFrame = document.getElementById('mainFrame');
+        const newWindowBtn = document.getElementById('newWindowBtn');
+        const closeWindowBtn = document.getElementById('closeWindowBtn');
+        const refreshBtn = document.getElementById('refreshBtn');
+
+        // Application State
+        let activeWindows = 1; // Start with one window (the main frame)
+        let apiKey = '';
+
+        // Initialize
+        function init() {
+            // Load API key from localStorage if available
+            const savedApiKey = localStorage.getItem('geminiApiKey');
+            if (savedApiKey) {
+                apiKeyInput.value = savedApiKey;
+                apiKey = savedApiKey;
+            }
+            
+            updateWindowCount();
+            
+            // Set up event listeners
+            saveApiKeyBtn.addEventListener('click', saveApiKey);
+            linkItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    // Remove active class from all items
+                    linkItems.forEach(i => i.classList.remove('active'));
+                    // Add active class to clicked item
+                    item.classList.add('active');
+                    // Load the URL in the main frame
+                    mainFrame.src = item.getAttribute('data-url');
+                });
+            });
+            
+            searchBtn.addEventListener('click', performSearch);
+            newWindowBtn.addEventListener('click', openNewWindow);
+            closeWindowBtn.addEventListener('click', closeWindow);
+            refreshBtn.addEventListener('click', refreshWindow);
+        }
+
+        // Save API Key
+        function saveApiKey() {
+            apiKey = apiKeyInput.value.trim();
+            if (apiKey) {
+                localStorage.setItem('geminiApiKey', apiKey);
+                alert('API Key saved successfully!');
+            } else {
+                alert('Please enter a valid API Key');
+            }
+        }
+
+        // Update Window Count
+        function updateWindowCount() {
+            windowCount.textContent = activeWindows;
+        }
+
+        // Perform Search using Gemini API
+        async function performSearch() {
+            const query = searchQuery.value.trim();
+            if (!query) {
+                searchStatus.textContent = 'Please enter a search query';
+                return;
+            }
+            
+            if (!apiKey) {
+                searchStatus.textContent = 'Please set your Gemini API Key first';
+                return;
+            }
+            
+            searchStatus.textContent = 'Searching...';
+            
+            try {
+                // This is a simulation of Gemini API call
+                // In a real implementation, you would use the actual Gemini API
+                await simulateGeminiSearch(query);
+                
+                searchStatus.textContent = `Search completed for: "${query}"`;
+                
+                // Simulate adding a new link based on search results
+                const newLinkId = 'search-result-' + Date.now();
+                const linkList = document.querySelector('.link-list');
+                const newLinkItem = document.createElement('div');
+                newLinkItem.className = 'link-item';
+                newLinkItem.setAttribute('data-url', `https://example.com/search?q=${encodeURIComponent(query)}`);
+                newLinkItem.innerHTML = `
+                    <strong>Search: ${query}</strong>
+                    <p>https://example.com/search?q=${encodeURIComponent(query)}</p>
+                `;
+                
+                newLinkItem.addEventListener('click', () => {
+                    linkItems.forEach(i => i.classList.remove('active'));
+                    newLinkItem.classList.add('active');
+                    mainFrame.src = newLinkItem.getAttribute('data-url');
+                });
+                
+                linkList.appendChild(newLinkItem);
+                
+            } catch (error) {
+                searchStatus.textContent = 'Search failed: ' + error.message;
+            }
+        }
+
+        // Simulate Gemini API Search
+        function simulateGeminiSearch(query) {
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    // Simulate API response
+                    console.log(`Searching for: ${query}`);
+                    resolve({
+                        results: [
+                            { title: `Result 1 for ${query}`, url: 'https://example.com/result1' },
+                            { title: `Result 2 for ${query}`, url: 'https://example.com/result2' },
+                            { title: `Result 3 for ${query}`, url: 'https://example.com/result3' }
+                        ]
+                    });
+                }, 2000);
+            });
+        }
+
+        // Open New Window
+        function openNewWindow() {
+            activeWindows++;
+            updateWindowCount();
+            
+            // In a real implementation, this would open a new browser window or tab
+            // For this demo, we'll simulate by showing a message
+            alert(`New window opened! Total windows: ${activeWindows}`);
+            
+            // Update the status to show the new window count
+            searchStatus.textContent = `New window opened. Total: ${activeWindows}`;
+        }
+
+        // Close Window
+        function closeWindow() {
+            if (activeWindows > 1) {
+                activeWindows--;
+                updateWindowCount();
+                searchStatus.textContent = `Window closed. Total: ${activeWindows}`;
+            } else {
+                searchStatus.textContent = 'Cannot close the last window';
+            }
+        }
+
+        // Refresh Window
+        function refreshWindow() {
+            mainFrame.src = mainFrame.src;
+            searchStatus.textContent = 'Window refreshed';
+        }
+
+        // Initialize the application
+        init();
+    </script>
+</body>
+</html>
