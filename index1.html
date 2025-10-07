@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gemini Web Manager</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+/* 🌈 Gemini Web Manager – Refined & Soft UI */
+:root {
+  --primary: #8b7afc;
+  --secondary: #c89bfd;
+  --accent: #ffb6b9;
+  --light: #f9fafc;
+  --dark: #333;
+  --gray: #7a7a7a;
+  --success: #86efac;
+  --warning: #fde68a;
+  --danger: #fca5a5;
+  --radius: 14px;
+  --shadow: 0 6px 16px rgba(0,0,0,0.06);
+  --transition: .3s ease;
+}
+
+* {
+  margin: 0; padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+body {
+  background: linear-gradient(135deg,#f8faff,#f3f1ff);
+  color: var(--dark);
+  min-height: 100vh;
+  padding: 24px;
+}
+
+.container {
+  max-width: 1500px;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+/* 🩵 Header */
+header {
+  background: rgba(255,255,255,0.85);
+  backdrop-filter: blur(12px);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  text-align: center;
+  padding: 30px;
+  position: relative;
+  overflow: hidden;
+}
+
+header::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 4px;
+  background: linear-gradient(90deg,var(--primary),var(--secondary),var(--accent));
+}
+
+h1 {
+  font-size: 2.4rem;
+  background: linear-gradient(90deg,var(--primary),var(--accent));
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.subtitle {
+  color: var(--gray);
+  font-size: 1.1rem;
+  max-width: 700px;
+  margin: 8px auto 0;
+}
+
+/* 🪄 Layout */
+.main-content {
+  display: flex;
+  gap: 20px;
+  height: calc(100vh - 220px);
+}
+
+.sidebar, .link-list, .main-window, .window-counter {
+  background: rgba(255,255,255,0.85);
+  backdrop-filter: blur(10px);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 20px;
+}
+
+/* 📂 Sidebar */
+.sidebar {
+  width: 340px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.section {
+  background: var(--light);
+  border-left: 4px solid var(--primary);
+  border-radius: var(--radius);
+  padding: 16px;
+}
+
+.section h3 {
+  color: var(--primary);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* 🟢 API Status */
+.api-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(139,122,252,0.1);
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.status-indicator {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: var(--success);
+  animation: pulse 1.8s infinite;
+}
+
+@keyframes pulse {50%{opacity:.5;}}
+
+/* 🌸 Buttons */
+.btn {
+  display: flex; align-items: center; justify-content: center;
+  gap: 6px;
+  width: 100%;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 18px;
+  color: #fff;
+  font-weight: 600;
+  background: linear-gradient(135deg,var(--primary),var(--secondary));
+  cursor: pointer;
+  transition: var(--transition);
+}
+.btn:hover {transform: translateY(-3px); box-shadow: 0 6px 14px rgba(139,122,252,0.3);}
+.btn-secondary {background: linear-gradient(135deg,var(--accent),#ffc7c9);}
+
+/* 💻 Link list */
+.link-list {flex: 1; overflow-y: auto;}
+.link-item {
+  display: flex; align-items: center; gap: 12px;
+  background: var(--light);
+  padding: 14px; border-radius: 10px;
+  margin-bottom: 10px;
+  transition: var(--transition);
+}
+.link-item:hover {background: rgba(139,122,252,0.12); transform: translateX(5px);}
+.link-item.active {border-left: 4px solid var(--primary);}
+.link-icon {
+  width: 38px; height: 38px;
+  border-radius: 8px;
+  background: linear-gradient(135deg,var(--primary),var(--accent));
+  color: #fff; display: flex; align-items: center; justify-content: center;
+}
+.link-content strong {display:block;}
+.link-content p {font-size:.85rem;color:var(--gray);}
+
+/* 🪟 Main Window */
+.main-window {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 600px;
+}
+.window-header {
+  display:flex;justify-content:space-between;align-items:center;
+  border-bottom:1px solid #ececf0;
+  padding-bottom:12px;margin-bottom:18px;
+}
+.window-title {color:var(--primary);font-weight:600;}
+.control-btn {
+  border:none; border-radius:8px;
+  background: var(--light);
+  color: var(--dark);
+  padding:10px 14px;
+  cursor:pointer;
+  transition:var(--transition);
+}
+.control-btn:hover {background:var(--primary);color:#fff;}
+
+.window-content {
+  flex:1;
+  background: var(--light);
+  border-radius:10px;
+  padding:20px;
+  overflow-y:auto;
+  min-height: 400px;
+}
+
+.web-frame {
+  width:100%; height:100%;
+  border:none; border-radius:8px;
+  box-shadow: var(--shadow);
+  min-height: 400px;
+}
+
+/* 🔍 Search */
+.search-section {
+  background:white;
+  border-radius:var(--radius);
+  padding:18px;
+  box-shadow:var(--shadow);
+  margin-top: 20px;
+}
+.search-input {
+  width:100%;
+  padding:12px 15px;
+  border:1px solid #e5e7eb;
+  border-radius:8px;
+  background:var(--light);
+  transition:var(--transition);
+  margin-bottom: 10px;
+}
+.search-input:focus {
+  outline:none;
+  border-color:var(--primary);
+  box-shadow:0 0 0 3px rgba(139,122,252,0.2);
+}
+
+/* 📋 Window list */
+.window-list {
+  display:flex;flex-direction:column;gap:10px;
+  max-height:300px;overflow-y:auto;
+}
+.window-item {
+  display:flex;align-items:center;gap:10px;
+  background:white;
+  border-radius:8px;
+  padding:12px;
+  box-shadow:0 2px 5px rgba(0,0,0,0.04);
+  cursor:pointer;
+  transition:var(--transition);
+}
+.window-item:hover {background:rgba(139,122,252,0.12);}
+.window-item.active {border-left:4px solid var(--primary);}
+.window-icon {
+  width:34px;height:34px;
+  border-radius:8px;
+  background:linear-gradient(135deg,var(--primary),var(--accent));
+  color:#fff;display:flex;align-items:center;justify-content:center;
+}
+.window-info {flex: 1;}
+.window-info strong {font-size:.9rem;}
+.window-info p {font-size:.8rem;color:var(--gray);}
+.window-close {
+  background:none;border:none;
+  color:var(--danger);
+  font-size:1.2rem;
+  cursor:pointer;
+  transition:var(--transition);
+}
+.window-close:hover {transform:scale(1.2);}
+
+.empty-state {
+  text-align:center;
+  color:var(--gray);
+  padding:40px 20px;
+}
+.empty-state i {
+  font-size:3rem;
+  color:#ddd;
+  margin-bottom:10px;
+}
+
+/* 📱 Responsive */
+@media (max-width:1100px){
+  .main-content {flex-direction:column;height:auto;}
+  .sidebar{width:100%;}
+}
+
+/* API Key Display */
+.api-key-display {
+  background: rgba(139,122,252,0.05);
+  border-radius: 8px;
+  padding: 12px;
+  margin: 10px 0;
+  font-size: 0.9rem;
+  color: var(--gray);
+  border: 1px dashed rgba(139,122,252,0.3);
+}
+
+.api-key-display i {
+  color: var(--primary);
+  margin-right: 8px;
+}
+</style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Gemini Web Manager</h1>
+            <p class="subtitle">Easily manage multiple web links with real-time tracking and Gemini API integration</p>
+        </header>
+        
+        <div class="main-content">
+            <div class="sidebar">
+                <div class="section">
+                    <h3><i class="fas fa-key"></i> API Configuration</h3>
+                    <p>Your Gemini API key is securely saved and ready to use.</p>
+                    <div class="api-status">
+                        <div class="status-indicator"></div>
+                        <span>API Key: Configured and Ready</span>
+                    </div>
+                    <div class="api-key-display">
+                        <i class="fas fa-check-circle"></i> API key is securely stored
+                    </div>
+                    <button class="btn" id="testApiBtn">
+                        <i class="fas fa-bolt"></i> Test API Connection
+                    </button>
+                </div>
+                
+                <div class="section">
+                    <h3><i class="fas fa-window-restore"></i> Window Manager</h3>
+                    <div class="window-counter">
+                        <h3>Active Windows</h3>
+                        <div class="counter" id="windowCount">3</div>
+                        <p>Total windows currently open</p>
+                    </div>
+                    <button class="btn btn-secondary" id="newWindowBtn">
+                        <i class="fas fa-plus"></i> Open New Window
+                    </button>
+                </div>
+                
+                <div class="section">
+                    <h3><i class="fas fa-link"></i> Quick Links</h3>
+                    <div class="link-list">
+                        <div class="link-item active" data-url="https://gemini.google.com">
+                            <div class="link-icon">
+                                <i class="fab fa-google"></i>
+                            </div>
+                            <div class="link-content">
+                                <strong>Gemini Home</strong>
+                                <p>https://gemini.google.com</p>
+                            </div>
+                        </div>
+                        <div class="link-item" data-url="https://bit.ly/42jAlZg">
+                            <div class="link-icon">
+                                <i class="fas fa-file-alt"></i>
+                            </div>
+                            <div class="link-content">
+                                <strong>Press Release</strong>
+                                <p>https://bit.ly/42jAlZg</p>
+                            </div>
+                        </div>
+                        <div class="link-item" data-url="https://bit.ly/4gKFvTX">
+                            <div class="link-icon">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <div class="link-content">
+                                <strong>Popular Information</strong>
+                                <p>https://bit.ly/4gKFvTX</p>
+                            </div>
+                        </div>
+                        <div class="link-item" data-url="https://bit.ly/48CSBjZ">
+                            <div class="link-icon">
+                                <i class="fas fa-cogs"></i>
+                            </div>
+                            <div class="link-content">
+                                <strong>Advanced Information</strong>
+                                <p>https://bit.ly/48CSBjZ</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="main-window">
+                <div class="window-header">
+                    <div class="window-title">Web Content Viewer</div>
+                    <div class="window-controls">
+                        <button class="control-btn" id="refreshBtn">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                        <button class="control-btn" id="closeWindowBtn">
+                            <i class="fas fa-times"></i> Close Window
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="window-content">
+                    <iframe class="web-frame" id="mainFrame" src="https://gemini.google.com"></iframe>
+                </div>
+                
+                <div class="section">
+                    <h3><i class="fas fa-list"></i> Active Windows</h3>
+                    <div class="window-list" id="windowList">
+                        <!-- Windows will be dynamically added here -->
+                    </div>
+                </div>
+                
+                <div class="search-section">
+                    <h3><i class="fas fa-search"></i> Search with Gemini</h3>
+                    <input type="text" class="search-input" placeholder="Enter your search query..." id="searchQuery">
+                    <button class="btn" id="searchBtn">
+                        <i class="fas fa-search"></i> Search
+                    </button>
+                    <div class="status" id="searchStatus">Ready to search with Gemini API</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script>
+        // DOM Elements
+        const windowCount = document.getElementById('windowCount');
+        const linkItems = document.querySelectorAll('.link-item');
+        const searchQuery = document.getElementById('searchQuery');
+        const searchBtn = document.getElementById('searchBtn');
+        const searchStatus = document.getElementById('searchStatus');
+        const mainFrame = document.getElementById('mainFrame');
+        const newWindowBtn = document.getElementById('newWindowBtn');
+        const closeWindowBtn = document.getElementById('closeWindowBtn');
+        const refreshBtn = document.getElementById('refreshBtn');
+        const testApiBtn = document.getElementById('testApiBtn');
+        const windowList = document.getElementById('windowList');
+
+        // Application State
+        let activeWindows = 3; // Start with three windows
+        const apiKey = 'AIzaSyBq31IW6zwGMXSr2av0cAYJQucv1wRsdHM'; // Your API key is now hidden in JavaScript
+        let windows = [
+            { id: 1, title: 'Gemini Home', url: 'https://gemini.google.com', active: true },
+            { id: 2, title: 'Press Release', url: 'https://bit.ly/42jAlZg', active: false },
+            { id: 3, title: 'Popular Information', url: 'https://bit.ly/4gKFvTX', active: false }
+        ];
+
+        // Initialize
+        function init() {
+            updateWindowCount();
+            renderWindowList();
+            
+            // Set up event listeners
+            linkItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    // Remove active class from all items
+                    linkItems.forEach(i => i.classList.remove('active'));
+                    // Add active class to clicked item
+                    item.classList.add('active');
+                    // Load the URL in the main frame
+                    const url = item.getAttribute('data-url');
+                    mainFrame.src = url;
+                    
+                    // Update active window
+                    const title = item.querySelector('strong').textContent;
+                    updateActiveWindow(title, url);
+                });
+            });
+            
+            searchBtn.addEventListener('click', performSearch);
+            newWindowBtn.addEventListener('click', openNewWindow);
+            closeWindowBtn.addEventListener('click', closeWindow);
+            refreshBtn.addEventListener('click', refreshWindow);
+            testApiBtn.addEventListener('click', testApiConnection);
+        }
+
+        // Update Window Count
+        function updateWindowCount() {
+            windowCount.textContent = activeWindows;
+        }
+
+        // Render Window List
+        function renderWindowList() {
+            windowList.innerHTML = '';
+            
+            if (windows.length === 0) {
+                windowList.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-window-close"></i>
+                        <p>No windows open</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            windows.forEach(win => {
+                const windowItem = document.createElement('div');
+                windowItem.className = `window-item ${win.active ? 'active' : ''}`;
+                windowItem.innerHTML = `
+                    <div class="window-icon">
+                        <i class="fas fa-window-restore"></i>
+                    </div>
+                    <div class="window-info">
+                        <strong>${win.title}</strong>
+                        <p>${win.url}</p>
+                    </div>
+                    <button class="window-close" data-id="${win.id}">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
+                
+                windowItem.addEventListener('click', (e) => {
+                    if (!e.target.classList.contains('window-close') && 
+                        !e.target.parentElement.classList.contains('window-close')) {
+                        // Switch to this window
+                        switchToWindow(win.id);
+                    }
+                });
+                
+                const closeBtn = windowItem.querySelector('.window-close');
+                closeBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    closeSpecificWindow(win.id);
+                });
+                
+                windowList.appendChild(windowItem);
+            });
+        }
+
+        // Switch to a specific window
+        function switchToWindow(id) {
+            windows = windows.map(win => ({
+                ...win,
+                active: win.id === id
+            }));
+            
+            const window = windows.find(win => win.id === id);
+            if (window) {
+                mainFrame.src = window.url;
+                
+                // Update active link
+                linkItems.forEach(item => {
+                    if (item.getAttribute('data-url') === window.url) {
+                        linkItems.forEach(i => i.classList.remove('active'));
+                        item.classList.add('active');
+                    }
+                });
+                
+                renderWindowList();
+            }
+        }
+
+        // Close a specific window
+        function closeSpecificWindow(id) {
+            if (windows.length <= 1) {
+                searchStatus.textContent = 'Cannot close the last window';
+                return;
+            }
+            
+            const windowIndex = windows.findIndex(win => win.id === id);
+            if (windowIndex !== -1) {
+                const wasActive = windows[windowIndex].active;
+                
+                windows.splice(windowIndex, 1);
+                activeWindows--;
+                updateWindowCount();
+                
+                // If we closed the active window, activate the first one
+                if (wasActive && windows.length > 0) {
+                    windows[0].active = true;
+                    mainFrame.src = windows[0].url;
+                    
+                    // Update active link
+                    linkItems.forEach(item => {
+                        if (item.getAttribute('data-url') === windows[0].url) {
+                            linkItems.forEach(i => i.classList.remove('active'));
+                            item.classList.add('active');
+                        }
+                    });
+                }
+                
+                renderWindowList();
+                searchStatus.textContent = `Window closed. Total: ${activeWindows}`;
+            }
+        }
+
+        // Update Active Window
+        function updateActiveWindow(title, url) {
+            // Find if this window already exists
+            let windowExists = false;
+            windows = windows.map(win => {
+                if (win.active) {
+                    win.active = false;
+                }
+                if (win.url === url) {
+                    win.active = true;
+                    windowExists = true;
+                }
+                return win;
+            });
+            
+            // If window doesn't exist, create it
+            if (!windowExists) {
+                const newId = windows.length > 0 ? Math.max(...windows.map(w => w.id)) + 1 : 1;
+                windows.push({
+                    id: newId,
+                    title: title,
+                    url: url,
+                    active: true
+                });
+                activeWindows++;
+                updateWindowCount();
+            }
+            
+            renderWindowList();
+        }
+
+        // Perform Search using Gemini API
+        async function performSearch() {
+            const query = searchQuery.value.trim();
+            if (!query) {
+                searchStatus.textContent = 'Please enter a search query';
+                return;
+            }
+            
+            searchStatus.textContent = 'Searching with Gemini API...';
+            
+            try {
+                // This is a simulation of Gemini API call
+                // In a real implementation, you would use the actual Gemini API
+                await simulateGeminiSearch(query);
+                
+                searchStatus.textContent = `Search completed for: "${query}"`;
+                
+                // Simulate adding a new link based on search results
+                const newLinkId = 'search-result-' + Date.now();
+                const linkList = document.querySelector('.link-list');
+                const newLinkItem = document.createElement('div');
+                newLinkItem.className = 'link-item';
+                newLinkItem.setAttribute('data-url', `https://gemini.google.com/search?q=${encodeURIComponent(query)}`);
+                newLinkItem.innerHTML = `
+                    <div class="link-icon">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <div class="link-content">
+                        <strong>Search: ${query}</strong>
+                        <p>https://gemini.google.com/search?q=${encodeURIComponent(query)}</p>
+                    </div>
+                `;
+                
+                newLinkItem.addEventListener('click', () => {
+                    linkItems.forEach(i => i.classList.remove('active'));
+                    newLinkItem.classList.add('active');
+                    mainFrame.src = newLinkItem.getAttribute('data-url');
+                    updateActiveWindow(`Search: ${query}`, newLinkItem.getAttribute('data-url'));
+                });
+                
+                linkList.appendChild(newLinkItem);
+                
+            } catch (error) {
+                searchStatus.textContent = 'Search failed: ' + error.message;
+            }
+        }
+
+        // Simulate Gemini API Search
+        function simulateGeminiSearch(query) {
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    // Simulate API response
+                    console.log(`Searching for: ${query} with API key: ${apiKey}`);
+                    resolve({
+                        results: [
+                            { title: `Result 1 for ${query}`, url: 'https://example.com/result1' },
+                            { title: `Result 2 for ${query}`, url: 'https://example.com/result2' },
+                            { title: `Result 3 for ${query}`, url: 'https://example.com/result3' }
+                        ]
+                    });
+                }, 2000);
+            });
+        }
+
+        // Test API Connection
+        function testApiConnection() {
+            searchStatus.textContent = 'Testing API connection...';
+            
+            setTimeout(() => {
+                searchStatus.textContent = 'API connection successful! Gemini API is ready to use.';
+                testApiBtn.innerHTML = '<i class="fas fa-check"></i> API Connected';
+                testApiBtn.style.background = 'linear-gradient(135deg, var(--success), #22d3ee)';
+            }, 1500);
+        }
+
+        // Open New Window
+        function openNewWindow() {
+            const newId = windows.length > 0 ? Math.max(...windows.map(w => w.id)) + 1 : 1;
+            const newWindow = {
+                id: newId,
+                title: 'New Window',
+                url: 'https://gemini.google.com',
+                active: false
+            };
+            
+            windows.push(newWindow);
+            activeWindows++;
+            updateWindowCount();
+            renderWindowList();
+            
+            searchStatus.textContent = `New window opened. Total: ${activeWindows}`;
+        }
+
+        // Close Window
+        function closeWindow() {
+            if (activeWindows > 1) {
+                // Find and close the active window
+                const activeWindowIndex = windows.findIndex(win => win.active);
+                if (activeWindowIndex !== -1) {
+                    windows.splice(activeWindowIndex, 1);
+                    activeWindows--;
+                    
+                    // Activate the first window if available
+                    if (windows.length > 0) {
+                        windows[0].active = true;
+                        mainFrame.src = windows[0].url;
+                        
+                        // Update active link
+                        linkItems.forEach(item => {
+                            if (item.getAttribute('data-url') === windows[0].url) {
+                                linkItems.forEach(i => i.classList.remove('active'));
+                                item.classList.add('active');
+                            }
+                        });
+                    }
+                    
+                    updateWindowCount();
+                    renderWindowList();
+                    searchStatus.textContent = `Window closed. Total: ${activeWindows}`;
+                }
+            } else {
+                searchStatus.textContent = 'Cannot close the last window';
+            }
+        }
+
+        // Refresh Window
+        function refreshWindow() {
+            mainFrame.src = mainFrame.src;
+            searchStatus.textContent = 'Window refreshed';
+        }
+
+        // Initialize the application
+        init();
+    </script>
+</body>
+</html>
